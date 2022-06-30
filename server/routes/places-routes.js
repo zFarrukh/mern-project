@@ -28,6 +28,12 @@ const DUMMY_PLACES = [
   },
 ];
 
+router.get('/user/:uid', (req, res) => {
+  const userId = req.params.uid;
+  const places = DUMMY_PLACES.filter((p) => p.creator === userId);
+  res.status(200).json({ places });
+});
+
 router.get('/:pid', (req, res) => {
   const placeId = req.params.pid;
   const place = DUMMY_PLACES.find((p) => p.id === placeId);
