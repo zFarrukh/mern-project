@@ -1,27 +1,28 @@
-const DUMMY_PLACES = [
-  {
-    id: '1',
-    title: 'Empire State Building',
-    description: 'One of the most famous sky scrapers in the world!',
-    creator: '1',
-    location: {
-      lat: 40.7484405,
-      lng: -73.9856644,
-    },
-    address: '20 W 34th St, New York, NY 10001',
-  },
+const mongoose = require('mongoose');
 
-  {
-    id: '2',
-    title: 'Statue of Liberty',
-    description: 'Also one of the most famous sky scrapers in the world!',
-    creator: '2',
-    location: {
-      lat: 40.7484405,
-      lng: -73.9856644,
-    },
-    address: '10 Jay St, New York, NY 10012, USA',
-  },
-];
+const Schema = mongoose.Schema;
 
-module.exports = DUMMY_PLACES;
+const placeSchema = new Schema({
+  title: {
+    type: String,
+    required: true,
+  },
+  description: {
+    type: String,
+    required: true,
+    minlength: 5,
+  },
+  creator: {
+    type: String,
+    required: true,
+  },
+  image: {
+    type: String,
+    required: true,
+  },
+  address: { type: String, required: true },
+});
+
+const PlaceModel = mongoose.model('Place', placeSchema);
+
+module.exports = PlaceModel;

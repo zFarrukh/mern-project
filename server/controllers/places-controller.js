@@ -1,7 +1,33 @@
 const HttpError = require('../models/http-error');
 const { validationResult } = require('express-validator');
 
-let DUMMY_PLACES = require('../models/places-model');
+const Place = require('../models/places-model');
+
+let DUMMY_PLACES = [
+  {
+    id: '1',
+    title: 'Empire State Building',
+    description: 'One of the most famous sky scrapers in the world!',
+    creator: '1',
+    location: {
+      lat: 40.7484405,
+      lng: -73.9856644,
+    },
+    address: '20 W 34th St, New York, NY 10001',
+  },
+
+  {
+    id: '2',
+    title: 'Statue of Liberty',
+    description: 'Also one of the most famous sky scrapers in the world!',
+    creator: '2',
+    location: {
+      lat: 40.7484405,
+      lng: -73.9856644,
+    },
+    address: '10 Jay St, New York, NY 10012, USA',
+  },
+];
 
 const getPlaceById = (req, res) => {
   const placeId = req.params.pid;
@@ -22,24 +48,29 @@ const getPlacesByUserId = (req, res, next) => {
   res.status(200).json({ places });
 };
 
-const createPlace = (req, res) => {
+const createPlace = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     throw new HttpError('Invalid inputs passed', 422);
   }
-  const { title, description, coordinates, address, creator } = req.body;
-  const id = Math.round(Math.random() * 100000).toString();
+  const { title, description, address, creator } = req.body;
 
-  const createdPlace = {
+  const createdPlace = new Place({
     title,
     description,
-    location: coordinates,
     address,
     creator,
-    id,
-  };
-  DUMMY_PLACES.push(createdPlace);
-  res.status(201).json({ place: createdPlace });
+    image:
+      'https://cdn.psychologytoday.com/sites/default/files/styles/article-inline-half-caption/public/field_blog_entry_images/2018-09/shutterstock_648907024.jpg?itok=0hb44OrI',
+  });
+
+  try {
+    await createdPlace.save();
+    res.status(201).json({ place: createdPlace });
+  } catch (err) {
+    const error = new HttpError('Creating place failed, please try again', 500);
+    return next(error);
+  }
 };
 
 const updatePlace = (req, res) => {
